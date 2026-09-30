@@ -8,36 +8,60 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Font Plus Jakarta Sans -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Plus Jakarta Sans, Inter, Poppins, Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    <style id="theme-styles">
+        :root {
+            --font-family: 'Plus Jakarta Sans', sans-serif;
+            --bg-gradient: radial-gradient(ellipse at top, #1e1b4b 0%, #0f172a 60%, #020617 100%);
+            --bg-color: #020617;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --panel-bg: rgba(15, 23, 42, 0.75);
+            --panel-border: rgba(255, 255, 255, 0.08);
+            --card-bg: rgba(30, 41, 59, 0.45);
+            --accent-primary: #6366f1;
+            --accent-secondary: #818cf8;
+            --accent-glow: rgba(99, 102, 241, 0.35);
+        }
+
+        body { 
+            font-family: var(--font-family); 
+            background: var(--bg-gradient);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+        }
+
         .glass-panel {
-            background: rgba(15, 23, 42, 0.7);
+            background: var(--panel-bg);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--panel-border);
         }
+
         .glass-card {
-            background: rgba(30, 41, 59, 0.4);
+            background: var(--card-bg);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--panel-border);
         }
+
+        .text-main-color { color: var(--text-main); }
+        .text-muted-color { color: var(--text-muted); }
+
         .glow-button {
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.35);
+            box-shadow: 0 0 20px var(--accent-glow);
         }
-        .glow-button:hover {
-            box-shadow: 0 0 30px rgba(99, 102, 241, 0.6);
-        }
+
         .option-card {
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .option-card:hover {
-            border-color: rgba(129, 140, 248, 0.6);
-            background: rgba(49, 46, 129, 0.35);
+            border-color: var(--accent-secondary);
+            background: rgba(99, 102, 241, 0.15);
             transform: translateY(-2px);
         }
+
         .blur-locked {
             filter: blur(8px);
             user-select: none;
@@ -50,7 +74,7 @@
                 background: #ffffff !important;
                 color: #0f172a !important;
             }
-            header, footer, .no-print, button {
+            header, footer, .no-print, button, #theme-drawer {
                 display: none !important;
             }
             .glass-panel, .glass-card {
@@ -64,78 +88,146 @@
                 color: #0f172a !important;
                 text-shadow: none !important;
             }
-            #radarChart {
-                max-width: 400px !important;
-                max-height: 400px !important;
-            }
         }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-950/40 via-slate-950 to-slate-950">
+<body class="min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white transition-colors duration-300">
 
-    <!-- Header / Navbar -->
-    <header class="border-b border-slate-800/80 glass-panel sticky top-0 z-50">
-        <div class="max-w-5xl mx-auto px-5 py-4 flex justify-between items-center">
+    <header class="border-b border-slate-800/80 glass-panel sticky top-0 z-40">
+        <div class="max-w-5xl mx-auto px-5 py-3.5 flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 bg-gradient-to-tr from-indigo-600 to-violet-500 rounded-xl flex items-center justify-center font-extrabold text-white shadow-lg shadow-indigo-500/30">
+                <div class="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center font-extrabold text-white shadow-lg shadow-indigo-500/30">
                     S
                 </div>
                 <div>
-                    <span class="font-bold text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-300 via-violet-300 to-cyan-300">Saung Darogi</span>
-                    <span class="block text-[10px] text-slate-400 -mt-1 font-medium">Career & Personality Assessment</span>
+                    <span class="font-bold text-lg tracking-tight text-main-color">Saung Darogi</span>
+                    <span class="block text-[10px] text-muted-color -mt-1 font-medium">Career & Personality Assessment</span>
                 </div>
             </div>
-            <span class="text-xs font-semibold px-3 py-1.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 flex items-center gap-1.5">
-                <span class="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span> Model Holland (RIASEC)
-            </span>
+            
+            <div class="flex items-center gap-2">
+                <!-- Theme Toggle Button -->
+                <button onclick="toggleThemePanel()" class="px-3 py-1.5 rounded-full bg-slate-800/80 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 flex items-center gap-1.5 transition">
+                    <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg>
+                    <span>Edit Tema</span>
+                </button>
+            </div>
         </div>
     </header>
 
-    <!-- Main Content -->
+    <div id="theme-panel" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex justify-end">
+        <div class="w-full max-w-sm glass-panel bg-slate-950/95 border-l border-slate-800 h-full p-6 overflow-y-auto space-y-6 animate-slideLeft">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+                <h3 class="font-bold text-base text-main-color flex items-center gap-2">
+                    <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                    Kustomisasi Tema Web
+                </h3>
+                <button onclick="toggleThemePanel()" class="text-slate-400 hover:text-white p-1">
+                    ✕
+                </button>
+            </div>
+
+            <!-- 1. Skema Warna -->
+            <div class="space-y-3">
+                <label class="text-xs font-bold uppercase tracking-wider text-muted-color block">1. Skema Warna & Background</label>
+                <div class="grid grid-cols-1 gap-2">
+                    <button onclick="applyColorScheme('midnight')" class="p-3 rounded-xl border border-slate-800 bg-slate-900 hover:border-indigo-500 text-left flex items-center justify-between text-xs text-slate-200">
+                        <div class="flex items-center gap-2">
+                            <span class="w-4 h-4 rounded-full bg-indigo-600 inline-block"></span>
+                            <span>Midnight Sapphire (Dark)</span>
+                        </div>
+                    </button>
+                    <button onclick="applyColorScheme('natural')" class="p-3 rounded-xl border border-slate-800 bg-emerald-950/50 hover:border-emerald-500 text-left flex items-center justify-between text-xs text-slate-200">
+                        <div class="flex items-center gap-2">
+                            <span class="w-4 h-4 rounded-full bg-emerald-600 inline-block"></span>
+                            <span>Saung Natural (Emerald)</span>
+                        </div>
+                    </button>
+                    <button onclick="applyColorScheme('sunset')" class="p-3 rounded-xl border border-slate-800 bg-amber-950/50 hover:border-amber-500 text-left flex items-center justify-between text-xs text-slate-200">
+                        <div class="flex items-center gap-2">
+                            <span class="w-4 h-4 rounded-full bg-amber-500 inline-block"></span>
+                            <span>Sunset Warm (Gold & Bronze)</span>
+                        </div>
+                    </button>
+                    <button onclick="applyColorScheme('light')" class="p-3 rounded-xl border border-slate-300 bg-slate-100 hover:border-slate-400 text-left flex items-center justify-between text-xs text-slate-800 font-medium">
+                        <div class="flex items-center gap-2">
+                            <span class="w-4 h-4 rounded-full bg-slate-700 inline-block"></span>
+                            <span>Clean Light (Terang)</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2. Jenis Huruf -->
+            <div class="space-y-3">
+                <label class="text-xs font-bold uppercase tracking-wider text-muted-color block">2. Jenis Huruf / Font</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="applyFont('Plus Jakarta Sans')" class="p-2.5 rounded-lg border border-slate-800 bg-slate-900 text-xs text-center font-['Plus_Jakarta_Sans'] text-slate-200 hover:border-indigo-500">
+                        Jakarta Sans
+                    </button>
+                    <button onclick="applyFont('Inter')" class="p-2.5 rounded-lg border border-slate-800 bg-slate-900 text-xs text-center font-['Inter'] text-slate-200 hover:border-indigo-500">
+                        Inter
+                    </button>
+                    <button onclick="applyFont('Poppins')" class="p-2.5 rounded-lg border border-slate-800 bg-slate-900 text-xs text-center font-['Poppins'] text-slate-200 hover:border-indigo-500">
+                        Poppins
+                    </button>
+                    <button onclick="applyFont('Outfit')" class="p-2.5 rounded-lg border border-slate-800 bg-slate-900 text-xs text-center font-['Outfit'] text-slate-200 hover:border-indigo-500">
+                        Outfit
+                    </button>
+                </div>
+            </div>
+
+            <!-- Close button -->
+            <button onclick="toggleThemePanel()" class="w-full py-3 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white text-xs text-center block shadow-lg">
+                Simpan & Terapkan
+            </button>
+        </div>
+    </div>
+
     <main class="max-w-3xl mx-auto px-4 py-8 w-full flex-grow">
 
         <!-- STEP 1: Landing Page -->
         <div id="view-landing" class="space-y-8 animate-fadeIn">
             <div class="text-center space-y-4">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-xs font-semibold">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-semibold">
                     ✨ Eksplorasi Potensi & Arah Minat Pelajar & Mahasiswa
                 </div>
-                <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
+                <h1 class="text-3xl sm:text-5xl font-extrabold text-main-color tracking-tight leading-tight">
                     Temukan Tipologi <br><span class="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-violet-400 to-cyan-400">Kepribadian Holland Anda</span>
                 </h1>
-                <p class="text-slate-400 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
+                <p class="text-muted-color text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
                     Dirancang khusus untuk pelajar SMP, SMA/SMK, dan Mahasiswa guna memetakan gaya kerja, preferensi lingkungan belajar, serta kesesuaian jurusan dan profil karier masa depan.
                 </p>
             </div>
 
             <!-- Info Cards -->
             <div class="grid grid-cols-3 gap-3">
-                <div class="glass-card rounded-2xl p-4 text-center border border-slate-800">
-                    <p class="text-xs text-slate-400 font-medium">Jumlah Soal</p>
+                <div class="glass-card rounded-2xl p-4 text-center">
+                    <p class="text-xs text-muted-color font-medium">Jumlah Soal</p>
                     <p class="text-xl font-bold text-indigo-400 mt-1">48 Pertanyaan</p>
                 </div>
-                <div class="glass-card rounded-2xl p-4 text-center border border-slate-800">
-                    <p class="text-xs text-slate-400 font-medium">Estimasi Waktu</p>
+                <div class="glass-card rounded-2xl p-4 text-center">
+                    <p class="text-xs text-muted-color font-medium">Estimasi Waktu</p>
                     <p class="text-xl font-bold text-violet-400 mt-1">~ 8-10 Menit</p>
                 </div>
-                <div class="glass-card rounded-2xl p-4 text-center border border-slate-800">
-                    <p class="text-xs text-slate-400 font-medium">Output Hasil</p>
+                <div class="glass-card rounded-2xl p-4 text-center">
+                    <p class="text-xs text-muted-color font-medium">Output Hasil</p>
                     <p class="text-xl font-bold text-cyan-400 mt-1">Kode 3-Huruf</p>
                 </div>
             </div>
 
-            <!-- Tombol Mulai Tes (Diletakkan di Atas Panduan) -->
-            <button onclick="startTest()" class="w-full py-4 rounded-xl font-bold bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white shadow-xl glow-button transition duration-300 transform active:scale-[0.99] text-center block text-base">
+            <!-- Tombol Mulai Tes (Diletakkan di Atas Panduan Pengisian Tes) -->
+            <button onclick="startTest()" class="w-full py-4 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-xl glow-button transition duration-300 transform active:scale-[0.99] text-center block text-base">
                 Mulai Tes Kepribadian
             </button>
 
             <!-- Panduan Pengisian Tes (Diletakkan di Bawah Tombol) -->
             <div class="glass-panel rounded-2xl p-6 space-y-3">
-                <h3 class="font-semibold text-slate-200 text-sm flex items-center gap-2">
+                <h3 class="font-semibold text-main-color text-sm flex items-center gap-2">
                     <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     Panduan Pengisian Tes
                 </h3>
-                <ul class="text-xs text-slate-300 space-y-2 list-disc list-inside leading-relaxed">
+                <ul class="text-xs text-muted-color space-y-2 list-disc list-inside leading-relaxed">
                     <li>Pernyataan disajikan secara acak tanpa menampilkan label kategori kepribadian.</li>
                     <li>Jawablah secara jujur sesuai dengan ketertarikan alami, kebiasaan, dan perasaan Anda saat ini.</li>
                     <li>Pilihlah skala 1 (Sangat Tidak Sesuai) hingga 5 (Sangat Sesuai). Tidak ada jawaban yang salah.</li>
@@ -147,12 +239,12 @@
         <div id="view-quiz" class="hidden space-y-6">
             <!-- Progress Section -->
             <div class="space-y-2">
-                <div class="flex justify-between items-center text-xs text-slate-400 font-medium">
-                    <span id="quiz-progress-text" class="text-indigo-300 font-semibold">Pertanyaan 1 dari 48</span>
-                    <span id="quiz-progress-percent" class="text-slate-400">0%</span>
+                <div class="flex justify-between items-center text-xs font-medium">
+                    <span id="quiz-progress-text" class="text-indigo-400 font-semibold">Pertanyaan 1 dari 48</span>
+                    <span id="quiz-progress-percent" class="text-muted-color">0%</span>
                 </div>
-                <div class="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden p-0.5 border border-slate-800">
-                    <div id="quiz-progress-bar" class="bg-gradient-to-r from-indigo-500 via-violet-500 to-cyan-400 h-full rounded-full w-0 transition-all duration-300"></div>
+                <div class="w-full bg-slate-900/60 h-2.5 rounded-full overflow-hidden p-0.5 border border-slate-800">
+                    <div id="quiz-progress-bar" class="bg-indigo-500 h-full rounded-full w-0 transition-all duration-300"></div>
                 </div>
             </div>
 
@@ -164,39 +256,39 @@
                             Eksplorasi Minat & Gaya Kerja
                         </span>
                     </div>
-                    <h2 id="question-text" class="text-lg sm:text-2xl font-semibold text-white leading-relaxed">
+                    <h2 id="question-text" class="text-lg sm:text-2xl font-semibold text-main-color leading-relaxed">
                         Pernyataan tes...
                     </h2>
                 </div>
 
                 <!-- Likert Options -->
                 <div class="grid grid-cols-1 sm:grid-cols-5 gap-2.5 pt-2">
-                    <button onclick="selectOption(1)" class="option-card py-3.5 px-3 rounded-2xl text-xs font-semibold border border-slate-800 bg-slate-900/60 transition text-slate-300 flex flex-col items-center gap-1 group">
-                        <span class="text-base text-slate-500 group-hover:text-indigo-400 font-bold">1</span>
-                        <span class="text-[10px] text-slate-400 font-normal">Sangat Tidak Sesuai</span>
+                    <button onclick="selectOption(1)" class="option-card py-3.5 px-3 rounded-2xl text-xs font-semibold border border-slate-800/80 bg-slate-900/40 transition flex flex-col items-center gap-1 group">
+                        <span class="text-base text-muted-color font-bold">1</span>
+                        <span class="text-[10px] text-muted-color font-normal">Sangat Tidak Sesuai</span>
                     </button>
-                    <button onclick="selectOption(2)" class="option-card py-3.5 px-3 rounded-2xl text-xs font-semibold border border-slate-800 bg-slate-900/60 transition text-slate-300 flex flex-col items-center gap-1 group">
-                        <span class="text-base text-slate-500 group-hover:text-indigo-400 font-bold">2</span>
-                        <span class="text-[10px] text-slate-400 font-normal">Tidak Sesuai</span>
+                    <button onclick="selectOption(2)" class="option-card py-3.5 px-3 rounded-2xl text-xs font-semibold border border-slate-800/80 bg-slate-900/40 transition flex flex-col items-center gap-1 group">
+                        <span class="text-base text-muted-color font-bold">2</span>
+                        <span class="text-[10px] text-muted-color font-normal">Tidak Sesuai</span>
                     </button>
-                    <button onclick="selectOption(3)" class="option-card py-3.5 px-3 rounded-2xl text-xs font-semibold border border-slate-800 bg-slate-900/60 transition text-slate-300 flex flex-col items-center gap-1 group">
-                        <span class="text-base text-slate-500 group-hover:text-indigo-400 font-bold">3</span>
-                        <span class="text-[10px] text-slate-400 font-normal">Netral</span>
+                    <button onclick="selectOption(3)" class="option-card py-3.5 px-3 rounded-2xl text-xs font-semibold border border-slate-800/80 bg-slate-900/40 transition flex flex-col items-center gap-1 group">
+                        <span class="text-base text-muted-color font-bold">3</span>
+                        <span class="text-[10px] text-muted-color font-normal">Netral</span>
                     </button>
-                    <button onclick="selectOption(4)" class="option-card py-3.5 px-3 rounded-2xl text-xs font-semibold border border-slate-800 bg-slate-900/60 transition text-slate-300 flex flex-col items-center gap-1 group">
-                        <span class="text-base text-slate-500 group-hover:text-indigo-400 font-bold">4</span>
-                        <span class="text-[10px] text-slate-400 font-normal">Sesuai</span>
+                    <button onclick="selectOption(4)" class="option-card py-3.5 px-3 rounded-2xl text-xs font-semibold border border-slate-800/80 bg-slate-900/40 transition flex flex-col items-center gap-1 group">
+                        <span class="text-base text-muted-color font-bold">4</span>
+                        <span class="text-[10px] text-muted-color font-normal">Sesuai</span>
                     </button>
-                    <button onclick="selectOption(5)" class="option-card py-3.5 px-3 rounded-2xl text-xs font-semibold border border-slate-800 bg-slate-900/60 transition text-slate-300 flex flex-col items-center gap-1 group">
-                        <span class="text-base text-slate-500 group-hover:text-indigo-400 font-bold">5</span>
-                        <span class="text-[10px] text-slate-400 font-normal">Sangat Sesuai</span>
+                    <button onclick="selectOption(5)" class="option-card py-3.5 px-3 rounded-2xl text-xs font-semibold border border-slate-800/80 bg-slate-900/40 transition flex flex-col items-center gap-1 group">
+                        <span class="text-base text-muted-color font-bold">5</span>
+                        <span class="text-[10px] text-muted-color font-normal">Sangat Sesuai</span>
                     </button>
                 </div>
             </div>
 
             <!-- Navigation Controls -->
             <div class="flex justify-between items-center pt-2">
-                <button id="btn-back" onclick="prevQuestion()" class="text-xs font-medium text-slate-400 hover:text-white flex items-center gap-1 disabled:opacity-30 disabled:cursor-not-allowed transition">
+                <button id="btn-back" onclick="prevQuestion()" class="text-xs font-medium text-muted-color hover:text-main-color flex items-center gap-1 disabled:opacity-30 disabled:cursor-not-allowed transition">
                     ← Pertanyaan Sebelumnya
                 </button>
             </div>
@@ -208,8 +300,8 @@
                 <span class="text-xs font-bold uppercase tracking-widest text-indigo-400 bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20">
                     Analisis Jawaban Selesai
                 </span>
-                <h1 class="text-3xl sm:text-4xl font-extrabold text-white">Pratinjau Hasil Tes Anda</h1>
-                <p class="text-slate-400 text-sm max-w-lg mx-auto">Kami telah berhasil mengkalkulasi 48 indikator kepribadian Holland (RIASEC) Anda.</p>
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-main-color">Pratinjau Hasil Tes Anda</h1>
+                <p class="text-muted-color text-sm max-w-lg mx-auto">Kami telah berhasil mengkalkulasi 48 indikator kepribadian Holland (RIASEC) Anda.</p>
             </div>
 
             <!-- Unlocked Free Teaser Card -->
@@ -218,59 +310,56 @@
                     <span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20">
                         Bocoran Gratis #1
                     </span>
-                    <span class="text-xs text-slate-400">Tipe Dominan Teratas</span>
+                    <span class="text-xs text-muted-color">Tipe Dominan Teratas</span>
                 </div>
                 <div>
-                    <h3 id="teaser-title" class="text-xl font-bold text-white">---</h3>
-                    <p id="teaser-desc" class="text-xs text-slate-300 mt-1 leading-relaxed">---</p>
+                    <h3 id="teaser-title" class="text-xl font-bold text-main-color">---</h3>
+                    <p id="teaser-desc" class="text-xs text-muted-color mt-1 leading-relaxed">---</p>
                 </div>
             </div>
 
             <!-- Locked Features Box Overlay -->
             <div class="relative space-y-4">
-                <!-- Lock Screen Overlay Trigger Banner -->
                 <div class="absolute inset-0 z-20 flex flex-col items-center justify-center p-6 text-center glass-panel rounded-3xl border border-indigo-500/40 bg-slate-950/80 backdrop-blur-md">
-                    <div class="w-14 h-14 bg-gradient-to-tr from-indigo-600 to-violet-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-indigo-500/40 mb-3 animate-bounce">
+                    <div class="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-indigo-500/40 mb-3 animate-bounce">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 00 2 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                     </div>
-                    <h3 class="text-xl sm:text-2xl font-bold text-white">Buka Laporan Lengkap & Rekomendasi</h3>
-                    <p class="text-xs text-slate-300 max-w-md mt-1 mb-4 leading-relaxed">
+                    <h3 class="text-xl sm:text-2xl font-bold text-main-color">Buka Laporan Lengkap & Rekomendasi</h3>
+                    <p class="text-xs text-muted-color max-w-md mt-1 mb-4 leading-relaxed">
                         Dapatkan Kode 3-Huruf Holland, Diagram Jaring Radar, Analisis Kepribadian #2 & #3, serta Daftar Rekomendasi Jurusan Kuliah & Karier.
                     </p>
 
-                    <!-- Payment Card Selector -->
-                    <div class="w-full max-w-sm bg-slate-900/90 border border-slate-800 rounded-2xl p-4 text-left space-y-3 mb-5">
+                    <div class="w-full max-w-sm glass-card border border-slate-800 rounded-2xl p-4 text-left space-y-3 mb-5">
                         <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
                             <div>
-                                <span class="text-[10px] text-slate-400 block font-semibold">TOTAL BIAYA AKSES</span>
+                                <span class="text-[10px] text-muted-color block font-semibold">TOTAL BIAYA AKSES</span>
                                 <span class="text-2xl font-black text-emerald-400">Rp 15.000</span>
                             </div>
                             <span class="text-[10px] font-bold text-indigo-300 bg-indigo-500/20 px-2 py-0.5 rounded border border-indigo-500/30">Akses Selamanya</span>
                         </div>
-                        <p class="text-[11px] text-slate-400">Metode Pembayaran Instan (Verifikasi Otomatis):</p>
+                        <p class="text-[11px] text-muted-color">Metode Pembayaran Instan (Verifikasi Otomatis):</p>
                         <div class="grid grid-cols-3 gap-2 text-center text-[10px] font-semibold text-slate-300">
-                            <div class="bg-slate-800 p-2 rounded-lg border border-slate-700 flex flex-col items-center gap-1">
+                            <div class="bg-slate-900 p-2 rounded-lg border border-slate-800 flex flex-col items-center gap-1">
                                 <span class="text-indigo-400 font-bold">QRIS</span>
                                 <span class="text-[9px] text-slate-400">All E-Wallet</span>
                             </div>
-                            <div class="bg-slate-800 p-2 rounded-lg border border-slate-700 flex flex-col items-center gap-1">
+                            <div class="bg-slate-900 p-2 rounded-lg border border-slate-800 flex flex-col items-center gap-1">
                                 <span class="text-cyan-400 font-bold">Gopay / OVO</span>
                                 <span class="text-[9px] text-slate-400">Dana / Shopee</span>
                             </div>
-                            <div class="bg-slate-800 p-2 rounded-lg border border-slate-700 flex flex-col items-center gap-1">
+                            <div class="bg-slate-900 p-2 rounded-lg border border-slate-800 flex flex-col items-center gap-1">
                                 <span class="text-violet-400 font-bold">Bank Transfer</span>
                                 <span class="text-[9px] text-slate-400">VA Otomatis</span>
                             </div>
                         </div>
                     </div>
 
-                    <button id="btn-pay" onclick="simulatePayment()" class="w-full max-w-sm py-4 rounded-xl font-bold bg-gradient-to-r from-emerald-500 via-teal-500 to-indigo-600 hover:from-emerald-400 hover:to-indigo-500 text-white shadow-xl glow-button transition duration-200 text-center flex items-center justify-center gap-2 text-sm">
+                    <button id="btn-pay" onclick="simulatePayment()" class="w-full max-w-sm py-4 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-xl glow-button transition duration-200 text-center flex items-center justify-center gap-2 text-sm">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                         <span>Bayar Sekarang & Buka Hasil Lengkap</span>
                     </button>
                 </div>
 
-                <!-- Blurred Preview Content Behind Paywall -->
                 <div class="blur-locked space-y-4 opacity-40 select-none">
                     <div class="glass-panel rounded-2xl p-6 text-center">
                         <p class="text-xs text-indigo-300">Kode Tipologi Holland Utama Anda</p>
@@ -290,22 +379,22 @@
                 <span class="text-xs font-bold uppercase tracking-widest text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
                     Akses Pembayaran Terverifikasi ✓
                 </span>
-                <h1 class="text-3xl sm:text-4xl font-extrabold text-white">Laporan Hasil Kepribadian RIASEC</h1>
-                <p class="text-slate-400 text-sm max-w-lg mx-auto">Pemetaan lengkap profil kepribadian, gaya kerja unggulan, dan rekomendasi studi/karier Saung Darogi.</p>
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-main-color">Laporan Hasil Kepribadian RIASEC</h1>
+                <p class="text-muted-color text-sm max-w-lg mx-auto">Pemetaan lengkap profil kepribadian, gaya kerja unggulan, dan rekomendasi studi/karier Saung Darogi.</p>
             </div>
 
             <!-- Badge Holland Code -->
             <div class="glass-panel rounded-2xl p-6 text-center border-indigo-500/30 bg-indigo-950/30 space-y-2">
                 <p class="text-xs font-medium text-indigo-300 uppercase tracking-wider">Kode Tipologi Holland Utama Anda</p>
-                <h2 id="holland-code" class="text-4xl sm:text-5xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-violet-300 to-cyan-300 tracking-widest">
+                <h2 id="holland-code" class="text-4xl sm:text-5xl font-black text-indigo-400 tracking-widest">
                     ---
                 </h2>
-                <p id="holland-code-desc" class="text-xs text-slate-300 max-w-md mx-auto leading-relaxed pt-1"></p>
+                <p id="holland-code-desc" class="text-xs text-muted-color max-w-md mx-auto leading-relaxed pt-1"></p>
             </div>
 
             <!-- Radar Chart Card -->
             <div class="glass-panel rounded-3xl p-6 space-y-4">
-                <h3 class="text-base font-semibold text-slate-200 text-center">Diagram Tipologi Kepribadian (Radar Chart)</h3>
+                <h3 class="text-base font-semibold text-main-color text-center">Diagram Tipologi Kepribadian (Radar Chart)</h3>
                 <div class="max-w-md mx-auto relative h-[310px]">
                     <canvas id="radarChart"></canvas>
                 </div>
@@ -313,7 +402,7 @@
 
             <!-- Top 3 Dominant Cards -->
             <div class="space-y-4">
-                <h3 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+                <h3 class="text-lg font-bold text-main-color flex items-center gap-2">
                     <span>3 Tipe Kepribadian Dominan & Rekomendasi Studi/Karier</span>
                 </h3>
                 <div id="top-traits-container" class="space-y-4">
@@ -336,15 +425,65 @@
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-slate-900 py-6 bg-slate-950/80 text-center text-xs text-slate-500 no-print">
+    <footer class="border-t border-slate-900 py-6 bg-slate-950/80 text-center text-xs text-muted-color no-print">
         <p>© 2026 Saung Darogi Engine. Berdasarkan Teori Tipologi Kepribadian Holland (RIASEC).</p>
     </footer>
 
     <!-- Logic JavaScript -->
     <script>
+        // Theme Customizer Controller
+        function toggleThemePanel() {
+            const panel = document.getElementById('theme-panel');
+            panel.classList.toggle('hidden');
+        }
+
+        function applyColorScheme(scheme) {
+            const root = document.documentElement;
+            if (scheme === 'midnight') {
+                root.style.setProperty('--bg-gradient', 'radial-gradient(ellipse at top, #1e1b4b 0%, #0f172a 60%, #020617 100%)');
+                root.style.setProperty('--bg-color', '#020617');
+                root.style.setProperty('--text-main', '#f8fafc');
+                root.style.setProperty('--text-muted', '#94a3b8');
+                root.style.setProperty('--panel-bg', 'rgba(15, 23, 42, 0.75)');
+                root.style.setProperty('--panel-border', 'rgba(255, 255, 255, 0.08)');
+                root.style.setProperty('--card-bg', 'rgba(30, 41, 59, 0.45)');
+            } else if (scheme === 'natural') {
+                root.style.setProperty('--bg-gradient', 'radial-gradient(ellipse at top, #064e3b 0%, #022c22 60%, #022019 100%)');
+                root.style.setProperty('--bg-color', '#022019');
+                root.style.setProperty('--text-main', '#f0fdf4');
+                root.style.setProperty('--text-muted', '#a7f3d0');
+                root.style.setProperty('--panel-bg', 'rgba(6, 78, 59, 0.65)');
+                root.style.setProperty('--panel-border', 'rgba(52, 211, 153, 0.15)');
+                root.style.setProperty('--card-bg', 'rgba(4, 120, 87, 0.25)');
+            } else if (scheme === 'sunset') {
+                root.style.setProperty('--bg-gradient', 'radial-gradient(ellipse at top, #451a03 0%, #292524 60%, #0c0a09 100%)');
+                root.style.setProperty('--bg-color', '#0c0a09');
+                root.style.setProperty('--text-main', '#fffbeb');
+                root.style.setProperty('--text-muted', '#fde68a');
+                root.style.setProperty('--panel-bg', 'rgba(69, 26, 3, 0.65)');
+                root.style.setProperty('--panel-border', 'rgba(251, 191, 36, 0.15)');
+                root.style.setProperty('--card-bg', 'rgba(120, 53, 15, 0.25)');
+            } else if (scheme === 'light') {
+                root.style.setProperty('--bg-gradient', 'none');
+                root.style.setProperty('--bg-color', '#f8fafc');
+                root.style.setProperty('--text-main', '#0f172a');
+                root.style.setProperty('--text-muted', '#475569');
+                root.style.setProperty('--panel-bg', '#ffffff');
+                root.style.setProperty('--panel-border', '#e2e8f0');
+                root.style.setProperty('--card-bg', '#f1f5f9');
+            }
+
+            if (chartInstance) {
+                chartInstance.update();
+            }
+        }
+
+        function applyFont(fontName) {
+            document.documentElement.style.setProperty('--font-family', `'${fontName}', sans-serif`);
+        }
+
         // 48 Pertanyaan Kontekstual Pelajar/Mahasiswa (8 butir x 6 kategori Holland)
         const questions = [
-            // Gelombang 1
             { cat: "Realistic", text: "Saya menyukai kegiatan atau tugas yang melibatkan pekerjaan tangan, perbaikan barang, merakit alat, atau aktivitas fisik secara langsung." },
             { cat: "Investigative", text: "Saya merasa tertantang ketika diminta menganalisis masalah rumit, melakukan riset, atau memecahkan teka-teki logika sains." },
             { cat: "Artistic", text: "Saya lebih suka cara pengerjaan tugas yang bebas dan kreatif daripada mengikuti petunjuk langkah demi langkah yang kaku." },
@@ -352,7 +491,6 @@
             { cat: "Enterprising", text: "Saya menikmati peran sebagai pemimpin kelompok, pembawa acara, atau pihak yang meyakinkan orang lain dalam diskusi." },
             { cat: "Conventional", text: "Saya sangat menyukai keteraturan, kerapian catatan, penyusunan jadwal harian, dan kepatuhan pada aturan yang jelas." },
 
-            // Gelombang 2
             { cat: "Realistic", text: "Saya lebih menikmati belajar di laboratorium/lokakarya praktik langsung daripada sekadar duduk mendengarkan teori di dalam kelas." },
             { cat: "Artistic", text: "Saya suka mengekspresikan diri melalui seni visual, desain grafis, menulis cerita/puisi, musik, atau videografi konten digital." },
             { cat: "Investigative", text: "Saya terbiasa mencari tahu alasan ilmiah atau logika dasar di balik fenomena baru yang saya temukan di internet atau buku." },
@@ -360,7 +498,6 @@
             { cat: "Social", text: "Saya mudah berempati dan menikmati kegiatan sosial, relawan, kepramukaan, atau pelayanan masyarakat." },
             { cat: "Enterprising", text: "Saya tertarik pada dunia bisnis, ide jualan/startup, negosiasi, dan pencapaian target kerja yang menantang." },
 
-            // Gelombang 3
             { cat: "Investigative", text: "Saya menyukai mata pelajaran/kuliah yang membutuhkan pemikiran kritis mendalam seperti Fisika, Matematika, Kimia, atau Filsafat." },
             { cat: "Realistic", text: "Saya senang menggunakan alat pertukangan, perangkat keras komputer, atau perlengkapan teknis dalam aktivitas sehari-hari." },
             { cat: "Social", text: "Saya lebih senang bekerja dalam tim interaktif daripada bekerja sendirian tanpa komunikasi." },
@@ -368,7 +505,6 @@
             { cat: "Enterprising", text: "Saya berani mengambil risiko dan bertanggung jawab atas keputusan penting yang diambil dalam tim." },
             { cat: "Conventional", text: "Saya teliti dalam memeriksa kembali ejaan, format dokumen, atau detail kecil sebelum mengumpulkan tugas." },
 
-            // Gelombang 4
             { cat: "Realistic", text: "Saya lebih suka berada di luar ruangan (outdoor), berhubungan dengan tanaman, hewan, atau kegiatan lapangan fisik." },
             { cat: "Investigative", text: "Saya lebih suka membaca jurnal ilmiah, artikel analisis, atau buku wawasan daripada cerita fiksi hiburan." },
             { cat: "Artistic", text: "Saya sering mencetuskan ide-ide out-of-the-box yang unik dan berbeda dari pemikiran teman-teman pada umumnya." },
@@ -376,7 +512,6 @@
             { cat: "Enterprising", text: "Saya merasa percaya diri saat harus melakukan presentasi persuasif atau mempromosikan sebuah ide di depan publik." },
             { cat: "Conventional", text: "Saya lebih suka bekerja dengan sistem yang terstruktur, instruksi yang eksplisit, dan prosedur yang baku." },
 
-            // Gelombang 5
             { cat: "Realistic", text: "Saya cepat mengerti cara kerja suatu mesin, skema elektronik, atau perakitan komponen fisik hanya dengan melihat contohnya." },
             { cat: "Artistic", text: "Saya merasa terkekang jika harus bekerja di lingkungan yang terlalu formal, kaku, dan monoton tanpa ruang kreativitas." },
             { cat: "Investigative", text: "Saya senang melakukan eksperimen mandiri untuk membuktikan hipotesis atau teori yang saya ragukan." },
@@ -384,7 +519,6 @@
             { cat: "Enterprising", text: "Saya termotivasi oleh kompetisi, penghargaan atas prestasi, dan peluang untuk memimpin organisasi." },
             { cat: "Conventional", text: "Saya pandai menyimpan, mengarsipkan dokumen, dan mengatur file digital secara sistematis agar mudah ditemukan." },
 
-            // Gelombang 6
             { cat: "Realistic", text: "Saya menyukai olahraga, aktivitas ketangkasan motorik, atau proyek pembuatan maket/prototipe fisik." },
             { cat: "Investigative", text: "Saya suka menganalisis grafik, tren data kualitatif/kuantitatif, serta mencari pola tersembunyi di dalamnya." },
             { cat: "Artistic", text: "Saya menikmati kegiatan menggambar sketsa, bermain alat musik, merancang busana/layout, atau akting." },
@@ -392,7 +526,6 @@
             { cat: "Enterprising", text: "Saya terbiasa membagikan tugas secara efektif kepada anggota kelompok agar mencapai tujuan bersama secara cepat." },
             { cat: "Conventional", text: "Saya lebih memilih kepastian dan petunjuk yang jelas daripada situasi yang penuh keraguan atau tanpa aturan." },
 
-            // Gelombang 7
             { cat: "Realistic", text: "Saya tidak keberatan melakukan pekerjaan yang mengotorkan tangan jika itu berhubungan dengan perbaikan mesin/alam." },
             { cat: "Investigative", text: "Saya terbiasa menggunakan pendekatan sistematis dan objektif dalam menilai sebuah permasalahan." },
             { cat: "Artistic", text: "Saya senang menciptakan karya yang menyampaikan pesan emosional atau estetis bagi orang yang melihatnya." },
@@ -400,7 +533,6 @@
             { cat: "Enterprising", text: "Saya menikmati kegiatan lobi, negosiasi sponsor, atau mencari pendanaan untuk acara sekolah/kampus." },
             { cat: "Conventional", text: "Saya mengutamakan akurasi ketepatan waktu, efisiensi jadwal, dan pemenuhan tenggat waktu (deadline)." },
 
-            // Gelombang 8
             { cat: "Realistic", text: "Saya lebih puas melihat hasil kerja berupa produk fisik atau nyata yang bisa disentuh daripada sekadar konsep abstrak." },
             { cat: "Investigative", text: "Saya sering bertanya 'mengapa' dan 'bagaimana' untuk memahami mekanisme terdalam dari suatu peristiwa." },
             { cat: "Artistic", text: "Saya menyukai kegiatan improvisasi spontan dan eksperimen gaya baru dalam seni/karya tulisan." },
@@ -457,6 +589,7 @@
         let currentIndex = 0;
         let answers = new Array(questions.length).fill(null);
         let calculatedScores = null;
+        let chartInstance = null;
 
         function startTest() {
             document.getElementById('view-landing').classList.add('hidden');
@@ -559,7 +692,11 @@
             const labels = Object.keys(scores);
             const dataValues = Object.values(scores);
 
-            new Chart(ctx, {
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new Chart(ctx, {
                 type: 'radar',
                 data: {
                     labels: labels,
@@ -581,9 +718,9 @@
                             min: 0,
                             max: 40,
                             ticks: { display: false, stepSize: 8 },
-                            grid: { color: 'rgba(255, 255, 255, 0.08)' },
-                            angleLines: { color: 'rgba(255, 255, 255, 0.08)' },
-                            pointLabels: { color: '#cbd5e1', font: { size: 11, family: 'Plus Jakarta Sans', weight: '600' } }
+                            grid: { color: 'rgba(148, 163, 184, 0.15)' },
+                            angleLines: { color: 'rgba(148, 163, 184, 0.15)' },
+                            pointLabels: { color: 'var(--text-muted)', font: { size: 11, family: 'var(--font-family)', weight: '600' } }
                         }
                     },
                     plugins: { legend: { display: false } }
@@ -601,18 +738,18 @@
                 
                 const card = document.createElement('div');
                 card.className = "glass-panel rounded-2xl p-6 space-y-3 border-l-4 " + 
-                               (index === 0 ? "border-l-indigo-500 bg-indigo-950/30" : "border-l-violet-500 bg-slate-900/50");
+                               (index === 0 ? "border-l-indigo-500" : "border-l-violet-500");
 
                 card.innerHTML = `
                     <div class="flex justify-between items-center">
                         <div class="flex items-center gap-2.5">
-                            <span class="text-xs font-bold w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-300 flex items-center justify-center border border-indigo-500/30">#${index + 1}</span>
-                            <h4 class="font-bold text-white text-lg">${info.title}</h4>
+                            <span class="text-xs font-bold w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center border border-indigo-500/30">#${index + 1}</span>
+                            <h4 class="font-bold text-main-color text-lg">${info.title}</h4>
                         </div>
                         <span class="text-xs font-semibold px-3 py-1 rounded-full bg-slate-800/80 text-indigo-300 border border-slate-700">Skor: ${score}/40 (${pct}%)</span>
                     </div>
-                    <p class="text-xs text-slate-300 leading-relaxed"><strong class="text-slate-200">Karakteristik:</strong> ${info.desc}</p>
-                    <div class="text-xs text-slate-400 space-y-1.5 pt-1">
+                    <p class="text-xs text-muted-color leading-relaxed"><strong class="text-main-color">Karakteristik:</strong> ${info.desc}</p>
+                    <div class="text-xs text-muted-color space-y-1.5 pt-1">
                         <p><strong class="text-indigo-400">Gaya Kerja & Belajar:</strong> ${info.gaya}</p>
                         <p><strong class="text-cyan-400">Rekomendasi Jurusan / Karier:</strong> ${info.karir}</p>
                     </div>
